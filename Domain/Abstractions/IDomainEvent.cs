@@ -6,3 +6,11 @@ public interface IDomainEvent
 
     public string? Type => GetType().AssemblyQualifiedName;
 }
+
+public interface IDeferredDomainEvent : IDomainEvent
+{
+}
+
+public interface IImmediateDomainEvent : IDomainEvent
+{
+}
