@@ -1,0 +1,13 @@
+D:\FOXAI\CleanArchitectureDDD\Domain\bin\Debug\net8.0\Domain.deps.json
+D:\FOXAI\CleanArchitectureDDD\Domain\bin\Debug\net8.0\Domain.dll
+D:\FOXAI\CleanArchitectureDDD\Domain\bin\Debug\net8.0\Domain.pdb
+D:\FOXAI\CleanArchitectureDDD\Domain\obj\Debug\net8.0\Domain.csproj.AssemblyReference.cache
+D:\FOXAI\CleanArchitectureDDD\Domain\obj\Debug\net8.0\Domain.GeneratedMSBuildEditorConfig.editorconfig
+D:\FOXAI\CleanArchitectureDDD\Domain\obj\Debug\net8.0\Domain.AssemblyInfoInputs.cache
+D:\FOXAI\CleanArchitectureDDD\Domain\obj\Debug\net8.0\Domain.AssemblyInfo.cs
+D:\FOXAI\CleanArchitectureDDD\Domain\obj\Debug\net8.0\Domain.csproj.CoreCompileInputs.cache
+D:\FOXAI\CleanArchitectureDDD\Domain\obj\Debug\net8.0\Domain.sourcelink.json
+D:\FOXAI\CleanArchitectureDDD\Domain\obj\Debug\net8.0\Domain.dll
+D:\FOXAI\CleanArchitectureDDD\Domain\obj\Debug\net8.0\refint\Domain.dll
+D:\FOXAI\CleanArchitectureDDD\Domain\obj\Debug\net8.0\Domain.pdb
+D:\FOXAI\CleanArchitectureDDD\Domain\obj\Debug\net8.0\ref\Domain.dll

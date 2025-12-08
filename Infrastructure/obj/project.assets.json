@@ -2138,7 +2138,8 @@
         "framework": ".NETCoreApp,Version=v8.0",
         "dependencies": {
           "Domain": "1.0.0",
-          "MediatR": "12.2.0"
+          "MediatR": "12.2.0",
+          "Microsoft.Extensions.Configuration": "9.0.0"
         },
         "compile": {
           "bin/placeholder/Application.dll": {}
