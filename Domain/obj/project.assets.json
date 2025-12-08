@@ -120,19 +120,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\foxai\\.nuget\\packages\\": {}
+    "C:\\Users\\Admin\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\FOXAI\\CleanArchitectureDDD\\Domain\\Domain.csproj",
+      "projectUniqueName": "D:\\Hoanggggf\\CleanArchitectureDDD\\Domain\\Domain.csproj",
       "projectName": "Domain",
-      "projectPath": "D:\\FOXAI\\CleanArchitectureDDD\\Domain\\Domain.csproj",
-      "packagesPath": "C:\\Users\\foxai\\.nuget\\packages\\",
-      "outputPath": "D:\\FOXAI\\CleanArchitectureDDD\\Domain\\obj\\",
+      "projectPath": "D:\\Hoanggggf\\CleanArchitectureDDD\\Domain\\Domain.csproj",
+      "packagesPath": "C:\\Users\\Admin\\.nuget\\packages\\",
+      "outputPath": "D:\\Hoanggggf\\CleanArchitectureDDD\\Domain\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\foxai\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "C:\\Users\\Admin\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
@@ -182,7 +182,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.407/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.416/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

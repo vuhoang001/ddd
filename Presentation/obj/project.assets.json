@@ -629,19 +629,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\foxai\\.nuget\\packages\\": {}
+    "C:\\Users\\Admin\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\FOXAI\\CleanArchitectureDDD\\Presentation\\Presentation.csproj",
+      "projectUniqueName": "D:\\Hoanggggf\\CleanArchitectureDDD\\Presentation\\Presentation.csproj",
       "projectName": "Presentation",
-      "projectPath": "D:\\FOXAI\\CleanArchitectureDDD\\Presentation\\Presentation.csproj",
-      "packagesPath": "C:\\Users\\foxai\\.nuget\\packages\\",
-      "outputPath": "D:\\FOXAI\\CleanArchitectureDDD\\Presentation\\obj\\",
+      "projectPath": "D:\\Hoanggggf\\CleanArchitectureDDD\\Presentation\\Presentation.csproj",
+      "packagesPath": "C:\\Users\\Admin\\.nuget\\packages\\",
+      "outputPath": "D:\\Hoanggggf\\CleanArchitectureDDD\\Presentation\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\foxai\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "C:\\Users\\Admin\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
@@ -653,8 +653,8 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "projectReferences": {
-            "D:\\FOXAI\\CleanArchitectureDDD\\Application\\Application.csproj": {
-              "projectPath": "D:\\FOXAI\\CleanArchitectureDDD\\Application\\Application.csproj"
+            "D:\\Hoanggggf\\CleanArchitectureDDD\\Application\\Application.csproj": {
+              "projectPath": "D:\\Hoanggggf\\CleanArchitectureDDD\\Application\\Application.csproj"
             }
           }
         }
@@ -706,7 +706,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.407/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.416/PortableRuntimeIdentifierGraph.json"
       }
     }
   }
