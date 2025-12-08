@@ -1,174 +1,81 @@
-﻿using Application.Interfaces;
+﻿using System.Text.Json;
+using Domain.Abstractions;
 using Infrastructure.Data;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace Infrastructure.Messaging;
 
 using Microsoft.Extensions.Hosting;
 
-public sealed class OutboxProcessorOptions
-{
-    public int BatchSize { get; set; } = 50;
-    public int MaxAttempts { get; set; } = 10;
-    public TimeSpan LockDuration { get; set; } = TimeSpan.FromMinutes(1);
-    public TimeSpan IdleDeley { get; set; } = TimeSpan.FromMilliseconds(500);
-
-    public TimeSpan GetBackOff(int attempt)
-    {
-        var seconds = Math.Min(60, Math.Pow(2, Math.Max(0, attempt - 1)));
-        return TimeSpan.FromSeconds(seconds);
-    }
-}
-
 public sealed class OutBoxProcessor : BackgroundService
 {
     private readonly IServiceScopeFactory     _scopeFactory;
     private readonly ILogger<OutBoxProcessor> _log;
-    private readonly OutboxProcessorOptions   _opt;
-    private readonly string                   _lockId = $"host-{Environment.MachineName}-{Guid.NewGuid():N}";
+    private readonly TimeSpan                 _period = TimeSpan.FromSeconds(10);
 
     public OutBoxProcessor(
         IServiceScopeFactory scopeFactory,
-        IOptions<OutboxProcessorOptions> options,
         ILogger<OutBoxProcessor> log)
     {
         _scopeFactory = scopeFactory;
         _log          = log;
-        _opt          = options.Value;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        _log.LogInformation("OutboxProcessor started with LockId={LockId}", _lockId);
-
-        while (!stoppingToken.IsCancellationRequested)
+        using var timer = new PeriodicTimer(_period);
+        while (!stoppingToken.IsCancellationRequested && await timer.WaitForNextTickAsync(stoppingToken))
         {
-            try
-            {
-                var processed = await ProcessBatch(stoppingToken);
-                if (processed == 0)
-                    await Task.Delay(_opt.IdleDeley, stoppingToken);
-            }
-            catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
-            {
-                // Application is shutting down
-            }
-            catch (Exception ex)
-            {
-                _log.LogError(ex, "Outbox processing loop encountered an error");
-                await Task.Delay(TimeSpan.FromSeconds(2), stoppingToken);
-            }
+            await ProcessBatch(stoppingToken);
         }
 
         _log.LogInformation("OutboxProcessor stopped");
     }
 
-    private async Task<int> ProcessBatch(CancellationToken ct)
+    private async Task ProcessBatch(CancellationToken ct)
     {
-        using var scope      = _scopeFactory.CreateScope();
-        var       db         = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-        var       mediator   = scope.ServiceProvider.GetRequiredService<IMediator>();
-        var       serializer = scope.ServiceProvider.GetRequiredService<IEventSerializer>();
+        using var scope     = _scopeFactory.CreateScope();
+        var       dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var       mediator  = scope.ServiceProvider.GetRequiredService<IMediator>();
 
-        var now = DateTime.UtcNow;
+        var messages = await dbContext.OutBoxMessages
+            .Where(m => m.ProcessedAt == null)
+            .OrderBy(m => m.ProcessedAt)
+            .Take(20)
+            .ToListAsync(cancellationToken: ct);
 
-        // 1) Claim batch: acquire lock on unprocessed messages
-        var candidates = await db.OutBoxMessages
-            .Where(m => m.ProcessedAt == null &&
-                (m.LockedUntil == null || m.LockedUntil < now))
-            .OrderBy(m => m.CreatedAt)
-            .Take(_opt.BatchSize)
-            .ToListAsync(ct);
 
-        if (candidates.Count == 0) return 0;
-
-        foreach (var m in candidates)
-        {
-            m.LockId      = _lockId;
-            m.LockedUntil = now.Add(_opt.LockDuration);
-        }
-
-        try
-        {
-            await db.SaveChangesAsync(ct);
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            // Lock contention occurred - another processor claimed some messages
-            // Re-query to get only the messages we successfully locked
-            db.ChangeTracker.Clear();
-
-            var mine = await db.OutBoxMessages
-                .Where(m => m.ProcessedAt == null && m.LockId == _lockId)
-                .OrderBy(m => m.CreatedAt)
-                .ToListAsync(ct);
-
-            candidates = mine;
-        }
-
-        if (candidates.Count == 0) return 0;
-
-        // 2) Process each locked message
-        var ok = 0;
-        foreach (var msg in candidates)
+        foreach (var message in messages)
         {
             try
             {
-                // Validate message type before deserialization
-                if (string.IsNullOrWhiteSpace(msg.Type) || string.IsNullOrWhiteSpace(msg.Payload))
+                var domainEvent = DeserialDomainEvent(message);
+                if (domainEvent is not null)
                 {
-                    throw new InvalidOperationException(
-                        $"Invalid message data: Type={msg.Type}, PayloadLength={msg.Payload?.Length ?? 0}");
-                }
-
-                // 3) Deserialize and publish event
-                var evt = serializer.Deserialize(msg.Type, msg.Payload);
-
-                if (evt == null)
-                {
-                    throw new InvalidOperationException($"Deserialization returned null for type {msg.Type}");
-                }
-
-                await mediator.Publish(evt, ct);
-
-                // 4) Mark as processed
-                msg.ProcessedAt = DateTime.UtcNow;
-                msg.Error       = null;
-                ok++;
-            }
-            catch (Exception ex)
-            {
-                // 5) Handle retry logic and dead-letter queue
-                msg.Attempt += 1;
-                msg.Error   =  ex.ToString();
-
-                if (msg.Attempt >= _opt.MaxAttempts)
-                {
-                    // Move to dead-letter: mark as processed to stop retrying
-                    msg.ProcessedAt = DateTime.UtcNow;
-                    _log.LogError(ex, "Outbox message {Id} moved to dead-letter after {Attempt} attempts", msg.Id,
-                        msg.Attempt);
-                }
-                else
-                {
-                    // Schedule retry with exponential backoff
-                    msg.LockedUntil = DateTime.UtcNow + _opt.GetBackOff(msg.Attempt);
-                    _log.LogWarning(ex, "Outbox message {Id} failed attempt {Attempt}, will retry after {RetryAfter}",
-                        msg.Id, msg.Attempt, msg.LockedUntil);
+                    await mediator.Publish(domainEvent, ct);
+                    message.ProcessedAt = DateTime.UtcNow;
                 }
             }
-            finally
+            catch (Exception e)
             {
-                // Release lock (either processed or rescheduled)
-                msg.LockId = null;
+                message.Error = e.Message;
             }
         }
 
-        await db.SaveChangesAsync(ct);
-        return ok;
+        await dbContext.SaveChangesAsync();
+    }
+
+    private IDomainEvent? DeserialDomainEvent(OutBoxMessage outBoxMessage)
+    {
+        var type = AppDomain.CurrentDomain.GetAssemblies()
+            .SelectMany(a => a.GetTypes())
+            .FirstOrDefault(t => t.Name == outBoxMessage.Type);
+
+        if (type is null) return null;
+
+        return JsonSerializer.Deserialize(outBoxMessage.Payload, type) as IDomainEvent;
     }
 }
