@@ -19,7 +19,7 @@ public class UnitOfWork(AppDbContext context) : IUnitOfWork
             await transaction.CommitAsync();
             return result;
         }
-        catch (Exception e)
+        catch (Exception)
         {
             await transaction.RollbackAsync();
             throw;

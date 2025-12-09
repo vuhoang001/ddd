@@ -37,7 +37,7 @@ public class DomainEventsInterceptor : SaveChangesInterceptor
             {
                 var outboxMessage = new OutBoxMessage
                 {
-                    Type      = domainEvent.Type ?? domainEvent.GetType().Name,
+                    Type      = domainEvent.Type,
                     Payload   = JsonSerializer.Serialize(domainEvent, domainEvent.GetType()),
                     CreatedAt = DateTime.UtcNow
                 };

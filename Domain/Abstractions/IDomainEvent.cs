@@ -4,5 +4,5 @@ namespace Domain.Abstractions;
 
 public interface IDomainEvent : INotification
 {
-    public string? Type => GetType().AssemblyQualifiedName;
+    public string Type => GetType().Name;
 }

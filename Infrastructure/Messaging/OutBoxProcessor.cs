@@ -43,7 +43,7 @@ public sealed class OutBoxProcessor : BackgroundService
 
         var messages = await dbContext.OutBoxMessages
             .Where(m => m.ProcessedAt == null)
-            .OrderBy(m => m.ProcessedAt)
+            .OrderBy(m => m.CreatedAt)
             .Take(20)
             .ToListAsync(cancellationToken: ct);
 
@@ -65,7 +65,7 @@ public sealed class OutBoxProcessor : BackgroundService
             }
         }
 
-        await dbContext.SaveChangesAsync();
+        await dbContext.SaveChangesAsync(ct);
     }
 
     private IDomainEvent? DeserialDomainEvent(OutBoxMessage outBoxMessage)

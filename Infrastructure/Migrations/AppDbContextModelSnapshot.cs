@@ -45,6 +45,56 @@ namespace Infrastructure.Migrations
                     b.ToTable("Products");
                 });
 
+            modelBuilder.Entity("Domain.Entities.PurchaseOrder.PurchaseOrder", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("DocCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DocName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PurchaseOrders");
+                });
+
+            modelBuilder.Entity("Domain.Entities.PurchaseOrder.PurchaseOrderLine", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ProductCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ProductName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PurchaseOrderId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PurchaseOrderId");
+
+                    b.ToTable("PurchaseOrderLines");
+                });
+
             modelBuilder.Entity("Infrastructure.Messaging.OutBoxMessage", b =>
                 {
                     b.Property<int>("Id")
@@ -86,6 +136,60 @@ namespace Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("OutBoxMessages");
+                });
+
+            modelBuilder.Entity("Domain.Entities.PurchaseOrder.PurchaseOrderLine", b =>
+                {
+                    b.HasOne("Domain.Entities.PurchaseOrder.PurchaseOrder", null)
+                        .WithMany("PurchaseOrderLines")
+                        .HasForeignKey("PurchaseOrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.OwnsOne("Domain.ValueObject.Price", "UnitPrice", b1 =>
+                        {
+                            b1.Property<int>("PurchaseOrderLineId")
+                                .HasColumnType("int");
+
+                            b1.Property<decimal>("Value")
+                                .HasColumnType("decimal(18,2)")
+                                .HasColumnName("UnitPrice");
+
+                            b1.HasKey("PurchaseOrderLineId");
+
+                            b1.ToTable("PurchaseOrderLines");
+
+                            b1.WithOwner()
+                                .HasForeignKey("PurchaseOrderLineId");
+                        });
+
+                    b.OwnsOne("Domain.ValueObject.Quantity", "Quantity", b1 =>
+                        {
+                            b1.Property<int>("PurchaseOrderLineId")
+                                .HasColumnType("int");
+
+                            b1.Property<int>("Value")
+                                .HasColumnType("int")
+                                .HasColumnName("Quantity");
+
+                            b1.HasKey("PurchaseOrderLineId");
+
+                            b1.ToTable("PurchaseOrderLines");
+
+                            b1.WithOwner()
+                                .HasForeignKey("PurchaseOrderLineId");
+                        });
+
+                    b.Navigation("Quantity")
+                        .IsRequired();
+
+                    b.Navigation("UnitPrice")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Domain.Entities.PurchaseOrder.PurchaseOrder", b =>
+                {
+                    b.Navigation("PurchaseOrderLines");
                 });
 #pragma warning restore 612, 618
         }
