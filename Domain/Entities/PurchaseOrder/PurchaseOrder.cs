@@ -3,7 +3,7 @@ using Domain.ValueObject;
 
 namespace Domain.Entities.PurchaseOrder;
 
-public class PurchaseOrder : AggrerateRoot
+public class PurchaseOrder : AggregateRoot
 {
     public int Id { get; private set; }
     public string DocCode { get; private set; } = null!;

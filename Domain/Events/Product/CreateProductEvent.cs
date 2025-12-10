@@ -2,7 +2,7 @@
 
 namespace Domain.Events.Product;
 
-public class CreateProductEvent : IDomainEvent
+public class CreateProductEvent : IImmediateDomainEvent
 {
     public string ProductName { get; init; }
 

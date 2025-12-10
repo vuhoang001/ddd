@@ -1,8 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Text.Json;
 using Domain.Abstractions;
 using Infrastructure.Data;
 using MediatR;
@@ -46,10 +42,12 @@ public sealed class OutBoxProcessor : BackgroundService
         var       mediator  = scope.ServiceProvider.GetRequiredService<IMediator>();
 
         var messages = await dbContext.OutBoxMessages
-            .Where(m => m.ProcessedAt == null)
-            .OrderBy(m => m.CreatedAt)
-            .Take(20)
-            .ToListAsync(cancellationToken: ct);
+            .FromSqlRaw(@"
+                SELECT TOP 20 *
+                FROM OutBoxMessages WITH (UPDLOCK, READPAST)
+                WHERE ProcessedAt IS NULL
+                ORDER BY CreatedAt ASC")
+            .ToListAsync(ct);
 
 
         foreach (var message in messages)

@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories;
 
-public class Repository<TEntity, TKey> : IRepository<TEntity, TKey> where TEntity : class, IAggrerateRoot
+public class Repository<TEntity, TKey> : IRepository<TEntity, TKey> where TEntity : class, IAggregateRoot
     where TKey : notnull
 {
     private readonly AppDbContext   _dbContext;

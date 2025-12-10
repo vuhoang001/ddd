@@ -2,7 +2,7 @@
 
 namespace Domain.Repositories;
 
-public interface IRepository<TEntity, TKey> where TEntity : class, IAggrerateRoot
+public interface IRepository<TEntity, TKey> where TEntity : class, IAggregateRoot
 {
     IQueryable     Query();
     Task<TEntity?> GetByIdAsync(TKey id, CancellationToken cancellationToken = default);

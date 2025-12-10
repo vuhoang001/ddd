@@ -1,5 +1,7 @@
 ﻿using Domain.Entities;
 using Domain.Entities.PurchaseOrder;
+using Domain.Entities.User;
+using Domain.Events;
 using Infrastructure.Data.Interceptors;
 using Infrastructure.Messaging;
 using Microsoft.EntityFrameworkCore;
@@ -31,6 +33,7 @@ public class AppDbContext : DbContext
     }
 
     public DbSet<Product> Products { get; set; }
+    public DbSet<User> Users { get; set; }
 
     public DbSet<PurchaseOrder> PurchaseOrders { get; set; }
     public DbSet<PurchaseOrderLine> PurchaseOrderLines { get; set; }

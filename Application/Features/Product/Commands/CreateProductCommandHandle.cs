@@ -14,6 +14,8 @@ public class CreateProductCommandHandle(
     {
         var product = new Domain.Entities.Product(request.ProductName, request.ProductDescription, request.Quantity);
         productRepository.Add(product);
+
+
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
         return Result<object>.Success(product);

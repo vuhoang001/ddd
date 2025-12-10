@@ -3,7 +3,7 @@
 public interface IAuditableEntity
 {
     DateTime CreatedAt { get; }
-    DateTime UpdatedAt { get; }
+    DateTime? UpdatedAt { get; }
 }
 
 public static class AuditableEntityExtensions

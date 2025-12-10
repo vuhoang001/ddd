@@ -3,7 +3,7 @@ using Domain.Events.Product;
 
 namespace Domain.Entities;
 
-public class Product : AggrerateRoot
+public class Product : AggregateRoot
 {
     public int Id { get; private set; }
     public string ProductName { get; private set; } = null!;
