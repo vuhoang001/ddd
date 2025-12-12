@@ -1,5 +1,4 @@
 ﻿using Domain.Entities.User;
-using Domain.Events;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -9,9 +8,6 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 {
     public void Configure(EntityTypeBuilder<User> builder)
     {
-        builder.Property(x => x.Email).IsRequired();
-
-
         builder.OwnsOne(x => x.Password, p =>
         {
             p.Property(x => x.Hash)
@@ -20,6 +16,13 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 
             p.Property(x => x.Salt)
                 .HasColumnName("PasswordSalt")
+                .IsRequired();
+        });
+
+        builder.OwnsOne(x => x.Email, p =>
+        {
+            p.Property(x => x.Value)
+                .HasColumnName("Email")
                 .IsRequired();
         });
     }

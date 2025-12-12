@@ -1,5 +1,8 @@
-﻿using Domain.Abstractions;
+﻿using System.Text.Json.Serialization;
+using Domain.Abstractions;
+using Domain.Exceptions;
 using Domain.ValueObject;
+using ValidationException = System.ComponentModel.DataAnnotations.ValidationException;
 
 namespace Domain.Entities.User;
 
@@ -12,7 +15,7 @@ public class User : AggregateRoot, IAuditableEntity
 
     public string FullName => $"{FirstName} {LastName}";
 
-    public string Email { get; private set; } = null!;
+    public Email Email { get; private set; } = null!;
 
     public int? Age { get; private set; }
     public string? PhoneNumber { get; private set; } = null!;
@@ -22,19 +25,29 @@ public class User : AggregateRoot, IAuditableEntity
 
     public bool IsActive { get; private set; }
 
+    [JsonIgnore] public UserSession? UserSession { get; private set; }
+
     public User()
     {
     }
 
     public User(string firstName, string lastName, int? age, string? phoneNumber, Password password,
-        bool isActive, string email)
+        bool isActive, Email email)
     {
-        FirstName   = firstName;
-        LastName    = lastName;
+        ValidateAge(age);
+        FirstName   = firstName.Trim();
+        LastName    = lastName.Trim();
         Age         = age;
-        PhoneNumber = phoneNumber;
+        PhoneNumber = phoneNumber?.Trim();
         Password    = password;
         IsActive    = isActive;
         Email       = email;
+    }
+
+    private void ValidateAge(int? age)
+    {
+        if (!age.HasValue) return;
+        if (age < 0) throw new ValidationException("Tuổi không được nhỏ hơn 0");
+        if (age < 15) throw new ValidationException("Người dùng phải từ 15 tuổi trở lên");
     }
 }

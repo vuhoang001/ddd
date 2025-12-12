@@ -1,4 +1,5 @@
 ﻿using Domain.Exceptions;
+using ValidationException = System.ComponentModel.DataAnnotations.ValidationException;
 
 namespace Domain.ValueObject;
 
@@ -8,7 +9,7 @@ public class Price : IEquatable<Price>
 
     public Price(decimal value)
     {
-        if (value < 0) throw new DomainException("Price cannot be negative");
+        if (value < 0) throw new ValidationException("Price cannot be negative");
         Value = value;
     }
 

@@ -17,9 +17,9 @@ public class Repository<TEntity, TKey> : IRepository<TEntity, TKey> where TEntit
         _dbSet     = dbContext.Set<TEntity>();
     }
 
-    public IQueryable Query()
+    public IQueryable<TEntity> Query()
     {
-        return _dbSet.AsNoTracking().AsQueryable();
+        return _dbContext.Set<TEntity>().AsNoTracking().AsQueryable();
     }
 
     public async Task<TEntity?> GetByIdAsync(TKey id, CancellationToken cancellationToken = default)

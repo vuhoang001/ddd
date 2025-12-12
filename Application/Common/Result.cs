@@ -34,6 +34,9 @@ public class Result
     public static Result Forbidden(string? errorMessage = null, string? errorCode = null) =>
         new(false, new ErrorResult(ErrorType.Forbidden, errorCode, errorMessage));
 
+    public static Result BadRequest(string? errorMessage = null, string? errorCode = null) =>
+        new(false, new ErrorResult(ErrorType.BadRequest, errorCode, errorMessage));
+
     public static Result Internal(string? errorMessage = null, string? errorCode = null) =>
         new(false, new ErrorResult(ErrorType.Internal, errorCode, errorMessage));
 }
@@ -65,6 +68,9 @@ public class Result<T>
 
     public static Result<T> Validation(string? errorMessage = null, string? errorCode = null) =>
         new(false, default, new ErrorResult(ErrorType.Validation, errorCode, errorMessage));
+
+    public static Result<T> BadRequest(string? errorMessage = null, string? errorCode = null) =>
+        new(false, default, new ErrorResult(ErrorType.BadRequest, errorCode, errorMessage));
 
     public static Result<T> Conflict(string? errorMessage = null, string? errorCode = null) =>
         new(false, default, new ErrorResult(ErrorType.Conflict, errorCode, errorMessage));
@@ -105,6 +111,7 @@ public class ErrorResult
             ErrorType.Unauthorized => "UNAUTHORIZED",
             ErrorType.Forbidden    => "FORBIDDEN",
             ErrorType.Internal     => "INTERNAL_SERVER_ERROR",
+            ErrorType.BadRequest   => "BAD_REQUEST",
             _                      => "UNKNOWN_ERROR"
         };
     }
@@ -118,5 +125,6 @@ public enum ErrorType
     Unauthorized,
     Invalid,
     Forbidden,
-    Internal
+    Internal,
+    BadRequest
 }

@@ -39,7 +39,7 @@ public class Quantity : IEquatable<Quantity>
     public static Quantity operator -(Quantity a, Quantity b)
     {
         if (a.Value < b.Value)
-            throw new DomainException("Số lượng không được âm");
+            throw new ValidationException("Số lượng không được âm");
 
         return new Quantity(a.Value - b.Value);
     }

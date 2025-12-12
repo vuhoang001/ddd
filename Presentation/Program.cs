@@ -1,4 +1,5 @@
 using Application.Extensions;
+using CleanArchitectureDDD.Extensions;
 using Infrastructure.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,5 +18,6 @@ app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 app.MapControllers();
+app.UseGlobalExceptionHandler();
 
 app.Run();

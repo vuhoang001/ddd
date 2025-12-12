@@ -49,7 +49,7 @@ public class DomainEventsInterceptor(IMediator mediator) : SaveChangesIntercepto
                 }
                 catch (Exception)
                 {
-                    throw new DomainException("Falid to publish immediate domain event.");
+                    throw new ConflictException("Falid to publish immediate domain event.");
                 }
             }
 
